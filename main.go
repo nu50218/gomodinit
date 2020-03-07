@@ -8,15 +8,24 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/manifoldco/promptui"
 )
 
 func fixRemoteRepoName(repo string) (string, error) {
-	// TODO: まじめに書く
-	repo = strings.TrimPrefix(repo, "https://")
-	return strings.TrimSuffix(repo, ".git"), nil
+	// "https://github.com/nu50218/gomodinit.git"
+	if re := regexp.MustCompile(`^https://(.*)\.git$`); re.MatchString(repo) {
+		return re.FindStringSubmatch(repo)[1], nil
+	}
+	// "git@github.com:nu50218/gomodinit.git"
+	if re := regexp.MustCompile(`^git@(.*):(.*)\.git$`); re.MatchString(repo) {
+		submatch := re.FindStringSubmatch(repo)
+		return submatch[1] + "/" + submatch[2], nil
+	}
+	// add here
+	return "", errors.New("unable to parse remote repository name: " + repo)
 }
 
 func getRemoteRepos() ([]string, error) {
