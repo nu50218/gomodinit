@@ -1,6 +1,6 @@
 # gomodinit
 
-select remote repository and do go mod init
+select remote repository and exec go mod init
 
 this tool uses `git remote -v` and `go mod init`.
 
